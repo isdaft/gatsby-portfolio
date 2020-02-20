@@ -1,10 +1,10 @@
 module.exports = {
-  defaultTitle: 'John Doe',
+  defaultTitle: 'Ben Ashby',
   logo: 'https://portfolio.smakosh.com/favicon/favicon-512.png',
-  author: 'John Doe',
+  author: 'Ben Ashby',
   url: 'https://portfolio.smakosh.com',
-  legalName: 'John Doe',
-  defaultDescription: 'I’m John and I’m a Backend & Devops engineer!',
+  legalName: 'Benjamin Turner Ashby',
+  defaultDescription: 'I’m Ben and I’m a Frontend developer!',
   socialLinks: {
     twitter: 'http://www.twitter.com/smakosh',
     github: 'https://github.com/smakosh',
@@ -30,6 +30,6 @@ module.exports = {
     email: 'email',
     phone: 'phone number',
   },
-  foundingDate: '2018',
-  recaptcha_key: '6Lcs6lQUAAAAAEwhNH2IsobIe2csdda4TU3efpMN',
+  foundingDate: '2020',
+  recaptcha_key: '6LfDedYUAAAAAIqSxSTIUouhFyWWGOqtlHBtou5_',
 };

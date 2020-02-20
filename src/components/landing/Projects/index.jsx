@@ -3,9 +3,19 @@ import { useStaticQuery, graphql } from 'gatsby'
 import { Container, Card } from 'components/common'
 import starIcon from 'assets/icons/star.svg'
 import forkIcon from 'assets/icons/fork.svg'
-import { Wrapper, Grid, Item, Content, Stats } from './styles'
+import gitIcon from 'assets/icons/github.svg'
 
-export const Projects = () => {
+import { Wrapper, Grid, GithubGrid, Item, Content, Stats, AttenuatedContainer } from './styles';
+import ReactFrappeChart from "react-frappe-charts";
+import { FirebaseLink } from './checkHosting';
+import { GithubActivityCard } from './GithubActivityCard';
+import { GithubCommitCard } from './GithubCommitCard';
+
+
+
+
+export const Projects = (props) => {
+  const latestNodes = []; 
   const {
     github: {
       viewer: {
@@ -18,8 +28,8 @@ export const Projects = () => {
         github {
           viewer {
             repositories(
-              first: 8
-              orderBy: { field: STARGAZERS, direction: DESC }
+              first: 6
+              orderBy: { field: CREATED_AT, direction: DESC }
             ) {
               edges {
                 node {
@@ -31,6 +41,7 @@ export const Projects = () => {
                     totalCount
                   }
                   forkCount
+                  homepageUrl
                 }
               }
             }
@@ -39,21 +50,27 @@ export const Projects = () => {
       }
     `
   )
+  edges.map(({node}) => {
+    latestNodes.push(node.name);
+  });
+  
+
+  console.log(latestNodes);
   return (
+    
     <Wrapper as={Container} id="projects">
-      <h2>Projects</h2>
+      <h2>Github Activity & Projects</h2>
       <Grid>
-        {edges.map(({ node }) => (
+        
+        {edges.map(( {node} ) => (
+
           <Item
             key={node.id}
-            as="a"
-            href={node.url}
-            target="_blank"
-            rel="noopener noreferrer"
+            as="div"
           >
             <Card>
               <Content>
-                <h4>{node.name}</h4>
+                <h4><a target="_blank" href={node.url}>{node.name}</a></h4>
                 <p>{node.description}</p>
               </Content>
               <Stats>
@@ -65,11 +82,48 @@ export const Projects = () => {
                   <img src={forkIcon} alt="forks" />
                   <span>{node.forkCount}</span>
                 </div>
+                
+                <FirebaseLink hostingLink={node.homepageUrl}></FirebaseLink>
+
               </Stats>
             </Card>
           </Item>
         ))}
+        
       </Grid>
+      <AttenuatedContainer>
+      
+          <div id="readme" className="Box Box--condensed md js-code-block-container">
+            <div className="Box-header d-flex flex-items-center flex-justify-between px-2">
+              <div>
+                <h3 className="Box-title pr-3">
+                  <img src={gitIcon} style={{marginBottom: '0px' }}/>
+
+                </h3>
+                <span>YES. REAL-TIME GITHUB UPDATES</span>
+              </div>
+            </div>
+            
+            <div className="Box-body">
+              <article className="github" >
+                <h4>Realtime Activity Heatmap</h4>
+              </article>
+            </div>
+            <GithubGrid>
+              <div className="githubActivityGrid">
+                <GithubActivityCard/>
+              </div>
+              <div className="githubCommits">
+                {edges.map(( {node} ) => (
+                  <div key={node.id}>
+                    <GithubCommitCard repoName={node.name}/>
+                  </div>
+                ))}
+              </div>
+            </GithubGrid>
+        </div>
+      </AttenuatedContainer>
     </Wrapper>
   )
 }
+
