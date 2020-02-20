@@ -4,6 +4,8 @@ import { Container, Card } from 'components/common'
 import starIcon from 'assets/icons/star.svg'
 import forkIcon from 'assets/icons/fork.svg'
 import gitIcon from 'assets/icons/github.svg'
+import _ from 'lodash';
+import moment from 'moment';
 
 import { Wrapper, Grid, GithubGrid, Item, Content, Stats, AttenuatedContainer } from './styles';
 import ReactFrappeChart from "react-frappe-charts";
@@ -15,7 +17,6 @@ import { GithubCommitCard } from './GithubCommitCard';
 
 
 export const Projects = (props) => {
-  const latestNodes = []; 
   const {
     github: {
       viewer: {
@@ -26,36 +27,69 @@ export const Projects = (props) => {
     graphql`
       {
         github {
-          viewer {
-            repositories(
-              first: 6
-              orderBy: { field: CREATED_AT, direction: DESC }
-            ) {
-              edges {
-                node {
+    viewer {
+      repositories(first: 6, orderBy: {field: CREATED_AT, direction: DESC}) {
+        edges {
+          node {
+            id
+            name
+            url
+            description
+            stargazers {
+              totalCount
+            }
+            forkCount
+            homepageUrl
+            ref(qualifiedName: "master") {
+              target {
+                ... on GitHub_Commit {
                   id
-                  name
-                  url
-                  description
-                  stargazers {
-                    totalCount
+                  history(first: 3) {
+                    pageInfo {
+                      hasNextPage
+                    }
+                    edges {
+                      node {
+                        messageHeadline
+                        oid
+                        message
+                        author {
+                          name
+                          email
+                          date
+                        }
+                      }
+                    }
                   }
-                  forkCount
-                  homepageUrl
                 }
               }
             }
           }
         }
       }
+    }
+  }
+      }
     `
   )
-  edges.map(({node}) => {
-    latestNodes.push(node.name);
-  });
-  
+  //get commits from node and sort by latest
+  const latestCommits = []; 
 
-  console.log(latestNodes);
+  edges.map(({node}) => {
+    node.ref.target.history.edges.map(n => {
+      const message = n.node.messageHeadline;
+      const author = n.node.author.name;
+      const date = n.node.author.date;
+      const id = n.node.id;
+      latestCommits.push({repo: node.name, author: author, date: date, message:message, id: id});
+    })
+  });
+
+  const latestCommitsOrdered = _.sortBy(latestCommits, function(o) { return new moment(o.date); }).reverse();
+
+  //
+
+  
   return (
     
     <Wrapper as={Container} id="projects">
@@ -110,15 +144,21 @@ export const Projects = (props) => {
               </article>
             </div>
             <GithubGrid>
+
               <div className="githubActivityGrid">
                 <GithubActivityCard/>
               </div>
+
               <div className="githubCommits">
-                {edges.map(( {node} ) => (
-                  <div key={node.id}>
-                    <GithubCommitCard repoName={node.name}/>
+                {latestCommitsOrdered.slice(0, 6).map(( commit ) => (
+                  <div key={commit.id} className="commitGroup">
+                    <GithubCommitCard repoCommit={commit}/>
                   </div>
+             
                 ))}
+              
+                
+
               </div>
             </GithubGrid>
         </div>

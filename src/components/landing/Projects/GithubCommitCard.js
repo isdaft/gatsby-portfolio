@@ -1,8 +1,14 @@
 import React from 'react';
 
-import { GithubFetchCommit } from "../../../hooks/githubActivity";
-
 export const GithubCommitCard = (props) => {
-	
-	return <div>{props.repoName}</div>;
+	const { author, date, message, repo } = props.repoCommit;
+	return(
+			<div className="githubCard ">
+				<h4>{message}</h4>
+				<p>{repo}</p>
+				<p>{date}</p>
+			</div>
+
+	);
+
 }
