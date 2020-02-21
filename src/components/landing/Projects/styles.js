@@ -161,7 +161,20 @@ vertical-align: middle;
     vertical-align: text-top;
     fill: currentColor;
 }
-
+.githubCard{
+  margin:0 auto;
+}
+.gitCommit {
+  display:flex;
+  justify-content:space-between;
+  
+}
+.gitCommit h4, .gitCommit p{
+  margin-bottom:0px;
+}
+.githubActivityGrid{
+  margin:0 auto;
+}
 
   }`;
 
