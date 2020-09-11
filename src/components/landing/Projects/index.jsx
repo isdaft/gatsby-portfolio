@@ -71,22 +71,25 @@ export const Projects = (props) => {
   }
       }
     `
-  )
+  );
   //get commits from node and sort by latest
   const latestCommits = []; 
-
+  console.log(edges);
   edges.map(({node}) => {
-    node.ref.target.history.edges.map(n => {
+    if(node.ref != null){
+      node.ref.target.history.edges.map(n => {
       const message = n.node.messageHeadline;
       const author = n.node.author.name;
       const date = n.node.author.date;
       const id = n.node.id;
-      latestCommits.push({repo: node.name, author: author, date: date, message:message, id: id});
+      latestCommits.push({repo: node.name, author: author, date: date, message:message, id: node.id});
     })
+    }
+    
   });
 
   const latestCommitsOrdered = _.sortBy(latestCommits, function(o) { return new moment(o.date); }).reverse();
-
+  console.log('latestCommitsOrdered', latestCommitsOrdered)
   //
 
   
@@ -150,8 +153,10 @@ export const Projects = (props) => {
               </div>
 
               <div className="githubCommits">
+
                 {latestCommitsOrdered.slice(0, 6).map(( commit ) => (
-                  <div key={commit.id} className="commitGroup">
+
+                  <div key={commit.date} className="commitGroup">
                     <GithubCommitCard repoCommit={commit}/>
                   </div>
              
